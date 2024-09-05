@@ -49,7 +49,7 @@ jobs:
     steps:
     # Checkout the repository code
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Set up Docker Buildx (for building Docker images)
     - name: Set up Docker Buildx
