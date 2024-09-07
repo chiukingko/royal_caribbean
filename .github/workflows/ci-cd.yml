@@ -74,19 +74,19 @@ jobs:
       run: |
         docker pull ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
 
-    # Check if the container is already running (PowerShell)
+    # Check if the container is already running
     - name: Check if container is running
       id: is_running
       run: |
-        if ($(docker ps -q -f name=node-web-app)) {
-          echo "IS_RUNNING=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        } else {
-          echo "IS_RUNNING=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        }
+        if [ $(docker ps -q -f name=node-web-app) ]; then
+          echo "container-running=true" >> $GITHUB_ENV
+        else
+          echo "container-running=false" >> $GITHUB_ENV
+        fi
 
     # Stop and remove the existing container if running
     - name: Stop and remove running container
-      if: env.IS_RUNNING == 'true'
+      if: env.container-running == 'true'
       run: |
         docker stop node-web-app
         docker rm node-web-app
