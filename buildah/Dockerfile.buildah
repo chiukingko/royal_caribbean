@@ -3,10 +3,9 @@ FROM quay.io/redhat-github-actions/runner:latest as runner
 USER root
 
 RUN dnf module install -y nodejs:14
-# Install Buildah
-RUN apt-get update && apt-get install -y \
-    buildah \
-    && rm -rf /var/lib/apt/lists/*
+
+
+RUN dnf install buildah -y
 
 # Set Buildah to work in non-root environments
 RUN echo "containers: { storage-driver: \"vfs\" }" >> /etc/containers/storage.conf
