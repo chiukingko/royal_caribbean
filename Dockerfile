@@ -13,17 +13,7 @@ FROM node:${NODE_VERSION}-alpine
 # Use production node environment by default.
 ENV NODE_ENV production
 
-
 WORKDIR /usr/src/app
-
-# Create a non-root user
-RUN useradd -m appuser
-
-# Change ownership of the app directory to the new user
-RUN chown -R appuser /usr/src/app
-
-# Switch to the new user
-USER appuser
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -34,6 +24,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
+# Run the application as a non-root user.
+USER node
 
 # Copy the rest of the source files into the image.
 COPY . .
@@ -42,4 +34,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the application.
-CMD npm install && npm start
+CMD npm start
