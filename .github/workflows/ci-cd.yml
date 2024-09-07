@@ -86,7 +86,7 @@ jobs:
 
     # Stop and remove the existing container if running
     - name: Stop and remove running container
-      if: env.container-running == 'true'
+      if: $env:GITHUB_ENV == 'true'
       run: |
         docker stop node-web-app
         docker rm node-web-app
