@@ -78,7 +78,7 @@ jobs:
     - name: Check if container is running
       id: is_running
       run: |
-        if [ $(docker ps -q -f name=node-web-app) ]; then
+        if [ $(docker ps -a -q -f name=node-web-app) ]; then
           echo "container-running=true" >> $GITHUB_ENV
         else
           echo "container-running=false" >> $GITHUB_ENV
