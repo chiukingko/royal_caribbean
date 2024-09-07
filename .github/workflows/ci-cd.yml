@@ -83,7 +83,6 @@ jobs:
         } else {
           echo "container-running=false" >> $env:GITHUB_ENV
         }
-      shell: pwsh
 
     # Stop and remove the existing container if running
     - name: Stop and remove running container
