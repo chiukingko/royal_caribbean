@@ -11,8 +11,8 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
 
+    runs-on: [arc-runner-set]
     strategy:
       matrix:
         node-version: [22.x]
