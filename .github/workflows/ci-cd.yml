@@ -11,7 +11,7 @@ on:
 
 jobs:
   ci:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22.x]
@@ -61,7 +61,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
   cd:
     needs: ci
-    runs-on: self-hosted  # Use the self-hosted runner
+    runs-on: arc-runner-set  # Use the self-hosted arc-runner-set runner
 
     steps:
     # Checkout the repository
