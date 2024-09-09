@@ -1,0 +1,23 @@
+---
+- name: Install Apache
+  package:
+    name: "{{ apache_package }}"
+    state: present
+  become: yes
+  register: apache_install
+  failed_when: apache_install.failed
+
+- name: Start and enable Apache service
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Create a simple 'Hello World' HTML page
+  template:
+    src: index.html.j2
+    dest: "{{ apache_index_html }}"
+  become: yes
+  notify:
+    - Reload Apache
