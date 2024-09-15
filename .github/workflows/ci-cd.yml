@@ -61,8 +61,8 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
   cd:
     needs: ci
-    runs-on: self-hosted  # Use the self-hosted linux
-
+    # runs-on: self-hosted  # Use the self-hosted linux
+    runs-on: arc-runner-set
     steps:
     # Checkout the repository
     - name: Checkout code
