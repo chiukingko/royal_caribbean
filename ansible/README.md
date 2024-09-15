@@ -22,4 +22,4 @@ This repository contains an Ansible playbook to install and configure Apache on 
 2. **Run the Playbook**:
 
    ```bash
-   ansible-playbook -i inventory playbook.yml
+   ansible-playbook -i inventory playbook.yml --ask-become-pass
