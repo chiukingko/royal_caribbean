@@ -11,7 +11,7 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: arc-runner-set
     strategy:
       matrix:
         node-version: [22.x]
@@ -41,24 +41,24 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3.6.1
 
-    # Login to Docker Hub
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3.3.0
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    # Build and tag Docker image with "latest" and commit hash
-    - name: Build and tag Docker image
+    # Login to container registry (similar to DockerHub login)
+    - name: Log in to Container Registry
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest .
-        docker tag ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
-
-    # Push both tags to Docker Hub
-    - name: Push Docker image to Docker Hub
+        echo "${{ secrets.REGISTRY_TOKEN }}" | podman login -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+    
+    # Build and tag container image using Buildah
+    - name: Build and tag image with Buildah
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
+        buildah bud --storage-driver=vfs --layers -t ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest .
+        buildah tag ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
+
+    # Push both tags to the container registry using Podman
+    - name: Push image to Container Registry
+      run: |
+        podman push ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest
+        podman push ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
+
+
   cd:
     needs: ci
     # runs-on: self-hosted  # Use the self-hosted linux
@@ -68,16 +68,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Pull the latest Docker image from Docker Hub
-    - name: Pull latest Docker image
+    # # Pull the latest Docker image from Docker Hub
+    # - name: Pull latest Docker image
+    #   run: |
+    #     docker pull ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
+    # Pull the latest image from the container registry
+    - name: Pull latest image
       run: |
-        docker pull ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
+        podman pull ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest
 
     # Check if the container is already running
     - name: Check if container is running
       id: is_running
       run: |
-        if [ $(docker ps -a -q -f name=node-web-app) ]; then
+        if [ $(podman  ps -a -q -f name=node-web-app) ]; then
           echo "container-running=true" >> $GITHUB_ENV
         else
           echo "container-running=false" >> $GITHUB_ENV
@@ -87,10 +91,10 @@ jobs:
     - name: Stop and remove running container
       if: env.container-running == 'true'
       run: |
-        docker stop node-web-app
-        docker rm node-web-app
+        podman stop node-web-app
+        podman rm node-web-app
 
     # Run the new container
     - name: Run new Docker container
       run: |
-        docker run -d -p 3000:3000 --name node-web-app ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
+        podman run -d -p 3000:3000 --name node-web-app ${{ secrets.REGISTRY_USERNAME  }}/node-web-app:latest
