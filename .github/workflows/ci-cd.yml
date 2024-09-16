@@ -44,13 +44,13 @@ jobs:
     # Login to container registry (similar to DockerHub login)
     - name: Log in to Container Registry
       run: |
-        echo "${{ secrets.REGISTRY_TOKEN }}" | podman login -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+        echo "${{ secrets.REGISTRY_TOKEN }}" | sudo podman login -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
     
     # Build and tag container image using Buildah
     - name: Build and tag image with Buildah
       run: |
-        buildah bud --storage-driver=vfs --layers -t ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest .
-        buildah tag ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
+        sudo buildah bud --storage-driver=vfs --layers -t ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest .
+        sudo buildah tag ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
 
     # Push both tags to the container registry using Podman
     - name: Push image to Container Registry
