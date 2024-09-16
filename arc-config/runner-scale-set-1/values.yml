@@ -195,18 +195,18 @@ template:
         # command: ["/home/runner/run.sh"]
         image: ghcr.io/chiukingko/buildah:latest
         command: ["/home/runner/run.sh"]
-        env:
-        - name: GITHUB_PAT
-          valueFrom:
-            secretKeyRef:
-              name: pre-defined-secret
-              key: github_token
-        - name: GITHUB_OWNER
-          value: chiukingko
-        - name: GITHUB_REPOSITORY
-          value: royal_caribbean
-        - name: RUNNER_LABELS
-          value: openshift_action_runner
+        # env:
+        # - name: GITHUB_PAT
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: pre-defined-secret
+        #       key: github_token
+        # - name: GITHUB_OWNER
+        #   value: chiukingko
+        # - name: GITHUB_REPOSITORY
+        #   value: royal_caribbean
+        # - name: RUNNER_LABELS
+        #   value: openshift_action_runner
         
 
 ## Optional controller service account that needs to have required Role and RoleBinding
