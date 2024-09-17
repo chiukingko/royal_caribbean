@@ -44,19 +44,19 @@ jobs:
     # Login to container registry (similar to DockerHub login)
     - name: Log in to Container Registry
       run: |
-        echo "${{ secrets.REGISTRY_TOKEN }}" | sudo podman login -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+        podman login -u "${{ secrets.DOCKER_USERNAME }}" -p ${{ secrets.DOCKER_PASSWORD }} docker.io
     
     # Build and tag container image using Buildah
     - name: Build and tag image with Buildah
       run: |
-        sudo buildah bud --storage-driver=vfs --layers -t ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest .
-        sudo buildah tag ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
+        sudo buildah bud --storage-driver=vfs --layers -t ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest .
+        sudo buildah tag ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
 
     # Push both tags to the container registry using Podman
     - name: Push image to Container Registry
       run: |
-        podman push ${{ secrets.REGISTRY_USERNAME }}/node-web-app:latest
-        podman push ${{ secrets.REGISTRY_USERNAME }}/node-web-app:${{ github.sha }}
+        podman push ${{ secrets.DOCKER_USERNAME }}/node-web-app:latest docker://docker.io/${{ secrets.DOCKER_USERNAME }}/node-web-app:latest
+        podman push ${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }} docker://docker.io/${{ secrets.DOCKER_USERNAME }}/node-web-app:${{ github.sha }}
 
 
   cd:
